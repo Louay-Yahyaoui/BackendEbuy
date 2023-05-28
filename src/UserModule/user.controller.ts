@@ -33,12 +33,12 @@ export class UserController
     {
         return this.userService.getUser(username);
     }
-    @Patch('/users/:username')
+    @Patch('/users')
     updateUser(@Request() req:any,@Body() user:UpdateDto)
     {
         this.userService.updateUser(user,req.username);
     }
-    @Delete('/users/:username')
+    @Delete('/users')
     deleteUser(@Request() req:any)
     {
         this.userService.deleteUser(req.username,req.password);

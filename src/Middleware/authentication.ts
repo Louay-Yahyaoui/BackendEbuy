@@ -10,6 +10,7 @@ use(req:Request, res: any, next: () => void): any {
         const decoded=verify(jwt,process.env.SALT);
         req['username']=decoded.username;
         req['role']=decoded.role;
+        console.log(decoded);
     }
     catch
     {

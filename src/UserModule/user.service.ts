@@ -1,4 +1,4 @@
-import { ConflictException, HttpException, HttpStatus, Injectable, NotFoundException, Res } from "@nestjs/common";
+import {  HttpException, HttpStatus, Injectable, NotFoundException, Res } from "@nestjs/common";
 import { UserDto } from "./dto/UserDTO";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
@@ -46,12 +46,11 @@ export class UserService
       .where('user.username=:username',{username:username})
       .getRawOne();
       if(!result)
-        res.send('Wrong username');
-      console.log(result)
+        throw new HttpException('Wrong username', HttpStatus.UNAUTHORIZED);
       if(this.hashService.verifyStringWithSalt(password,result.password))
       {
         const userPayload = {  username: username,role:result.role };
-        const token=sign(userPayload, process.env.SALT, { expiresIn: '24h' });
+        const token=sign(userPayload, process.env.SALT, { expiresIn: '30d' });
         res.cookie('jwt', token,{maxAge:30*24*3600*1000});
         res.send('Login successful!');
       }
@@ -70,7 +69,9 @@ export class UserService
     }
     async deleteUser(username:string,password:string)
     {
-      const res=await this.userRepository.softDelete({username:username,password:this.hashService.hashString(password)});
+      if(!password)
+        throw new HttpException('Please provide your password to delete your account',HttpStatus.UNAUTHORIZED)
+      const res=await this.userRepository.delete({username:username,password:this.hashService.hashString(password)});
       return res;
     }
 }
