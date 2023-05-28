@@ -3,6 +3,7 @@ import { UserDto } from "./dto/UserDTO";
 import { UserService } from "./user.service";
 import { Response } from "express";
 import { UpdateDto } from "./dto/UpdateDto";
+import { loginDto } from "./dto/loginDto";
 
 @Controller()
 export class UserController
@@ -16,9 +17,9 @@ export class UserController
         return user.username;
     }
     @Post('/login')
-    login(@Param('username') username:string,@Param('password') password:string,@Res() response: Response)
+    login(@Body() body:loginDto,@Res() response: Response)
     {
-        this.userService.login(username,password,response);
+        this.userService.login(body.username,body.password,response);
     }
 
     @Get('/users/all')

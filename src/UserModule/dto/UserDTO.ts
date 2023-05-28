@@ -6,7 +6,7 @@ export class UserDto
     name:string;
     lastname:string;
     email:string;
-    tel:Long;
+    tel:string;
     password:string;
     adress:string;
     gender:Gender;

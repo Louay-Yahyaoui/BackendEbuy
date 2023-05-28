@@ -8,7 +8,7 @@ export class Product
     id_prod:UUID;
     @Column()
     name:string;
-    @Column()
+    @Column({type:'double'})
     prix:Double;
     @Column()
     category:string;

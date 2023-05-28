@@ -4,7 +4,7 @@ export class UpdateDto
     name?:string;
     lastname?:string;
     email?:string;
-    tel?:Long;
+    tel?:string;
     password?:string;
     adress?:string;
 }
