@@ -1,11 +1,13 @@
-import { Entity,Column, PrimaryColumn, Timestamp, CreateDateColumn } from "typeorm";
+import { Entity,Column, Timestamp, CreateDateColumn, PrimaryGeneratedColumn } from "typeorm";
 import { Gender } from "./Gender";
 import { Role } from "./Role";
 
 @Entity('user')
 export class User
 {
-    @PrimaryColumn({length:50})
+    @PrimaryGeneratedColumn("uuid")
+    id:string;
+    @Column({length:50,unique:true})
     username: string;
     @Column({length:25})
     name:string;
@@ -15,7 +17,7 @@ export class User
     email:string;
     @Column({unique:true})
     tel:Long;
-    @Column()
+    @Column({select:false})
     password:string;
     @Column()
     adress:string;

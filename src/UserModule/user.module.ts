@@ -3,11 +3,13 @@ import { UserService } from './user.service';
 import { UserController } from './user.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './Entities/User';
+import { HashService } from 'src/Hashing/hashing.service';
 @Module(
 {
-    providers:[UserService],
+    providers:[UserService,HashService],
     controllers:[UserController],
-    imports:[TypeOrmModule.forRoot(
+    imports:[
+        TypeOrmModule.forRoot(
         {
         type: 'mysql',
         host: process.env.DB_HOST,
@@ -16,7 +18,7 @@ import { User } from './Entities/User';
         password: process.env.DB_PASSWORD,
         database: process.env.DB_NAME,
         entities: [User],
-        synchronize:false,//you need migrations
+        synchronize:true,//you need migrations
         })],
     exports:[]
 }
