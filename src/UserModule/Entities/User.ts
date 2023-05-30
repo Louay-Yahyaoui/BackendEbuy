@@ -20,7 +20,7 @@ export class User
     @Column({select:false})
     password:string;
     @Column()
-    adress:string;
+    address:string;
     @Column({type:'enum',enum:Role,select:false,default:Role.User})
     role:Role;
     @Column({type:'enum',enum:Gender,enumName:"gender",default:Gender.Male})

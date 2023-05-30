@@ -1,4 +1,7 @@
-export class UpdateDto
+import { PartialType } from "@nestjs/mapped-types";
+import { UserDto } from "./UserDTO";
+
+export class UpdateDto extends PartialType(UserDto)
 {
     username?:string;
     name?:string;
