@@ -5,9 +5,9 @@ export class UserDto
 {
     @Length(3,30,{message:ErrorMessages.LENGTH_ERROR})
     username: string;
-    @Length(3,20,{message:ErrorMessages.LENGTH_ERROR})
+    @Length(3,25,{message:ErrorMessages.LENGTH_ERROR})
     name:string;
-    @Length(3,20,{message:ErrorMessages.LENGTH_ERROR})
+    @Length(3,25,{message:ErrorMessages.LENGTH_ERROR})
     lastname:string;
     @IsEmail({},{message:ErrorMessages.EMAIL_ERROR})
     email:string;

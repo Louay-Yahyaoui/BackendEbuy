@@ -4,7 +4,6 @@ import { UserService } from "./user.service";
 import { Response } from "express";
 import { UpdateDto } from "./dto/UpdateDto";
 import { loginDto } from "./dto/loginDto";
-
 @Controller()
 export class UserController
 {
@@ -36,11 +35,11 @@ export class UserController
     @Patch('/users')
     updateUser(@Request() req:any,@Body() user:UpdateDto)
     {
-        this.userService.updateUser(user,req.username);
+        this.userService.updateUser(user,req);
     }
     @Delete('/users')
     deleteUser(@Request() req:any)
     {
-        this.userService.deleteUser(req.username,req.password);
+        this.userService.deleteUser(req);
     }
 }

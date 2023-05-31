@@ -37,7 +37,8 @@ export class AppModule
     consumer.apply(AuthenticationMiddleware )
       .forRoutes(
         "users",
-        "admin"
+        "admin",
+        "products",
       )
   }
 

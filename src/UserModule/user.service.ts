@@ -34,8 +34,7 @@ export class UserService
             return await this.userRepository.save(user);
           }
           catch (e) {
-            console.log(e);
-            return new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+            return new HttpException("couldn't create user.",HttpStatus.CONFLICT);
           }
     }
     async login(username:string,password:string,@Res() res:Response)
@@ -60,15 +59,16 @@ export class UserService
       } 
         
     }
-    async updateUser(newuser:UpdateDto,username:string)
+    async updateUser(newuser:UpdateDto,req:any)
     {
-      console.log(newuser);
-      const res=await this.userRepository.update({username:username},newuser);
+      const res=await this.userRepository.update({username:req.username},newuser);
       console.log(res);
       return res;
     }
-    async deleteUser(username:string,password:string)
+    async deleteUser(req:any)
     {
+      const username=req.username;
+      const password=req.body.password;
       if(!password)
         throw new HttpException('Please provide your password to delete your account',HttpStatus.UNAUTHORIZED)
       const res=await this.userRepository.delete({username:username,password:this.hashService.hashString(password)});

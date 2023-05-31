@@ -1,8 +1,13 @@
-import { Controller } from "@nestjs/common";
+import { Controller,Get } from "@nestjs/common";
 import { AdminService } from "./admin.service";
 
 @Controller('/admin')
 export class AdminController
 {
-    constructor (private adminService:AdminService){};
+    constructor (private adminService:AdminService){}
+    @Get('/')
+    adminPanel()
+    {
+        return this.adminService.adminPanel();
+    }
 }

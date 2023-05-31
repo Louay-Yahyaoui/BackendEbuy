@@ -1,23 +1,25 @@
-import { UUID } from "crypto";
-import { Column, Double, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { User } from "src/UserModule/Entities/User";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn} from "typeorm";
 
 @Entity("product")
 export class Product
 {
-    @PrimaryGeneratedColumn('uuid')
-    id_prod:UUID;
-    @Column()
+    @PrimaryGeneratedColumn()
+    id_prod:number;
+    @Column({unique:true})
     name:string;
-    @Column({type:'double'})
-    prix:Double;
+    @Column()
+    price:number;
     @Column()
     category:string;
     @Column({length:255})
     description:string
-    @Column()
+    @Column({nullable:true})
     image:string;
     @Column()
-    Marque:string
+    brand:string
     @Column()
-    quantity:string;
+    quantity:number;
+    @ManyToOne(()=> User,{onDelete:'CASCADE',eager:true})
+    owner:User;
 }

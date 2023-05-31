@@ -1,6 +1,5 @@
 import { Injectable } from "@nestjs/common";
 import { createHash } from "crypto";
-
 @Injectable()
 export class HashService{
     hashString(input: string): string {

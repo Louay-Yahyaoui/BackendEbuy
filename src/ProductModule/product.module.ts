@@ -4,18 +4,17 @@ import { ProductController } from "./product.controller";
 import { HashModule } from "src/Hashing/hashing.module";
 import { Product } from "./Entities/Product";
 import { TypeOrmModule } from "@nestjs/typeorm";
+import { UserModule } from "src/UserModule/User.module";
 
 @Module(
     {
         imports:[HashModule,TypeOrmModule.forFeature(
             [Product]
-          )],
+          ),UserModule],
         providers:[ProductService],
         controllers:[ProductController],
         exports:[ProductService]
     }
 )
 export class ProductModule
-{
-    
-}
+{}
