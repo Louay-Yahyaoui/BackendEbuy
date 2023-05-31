@@ -1,10 +1,13 @@
 import {  HttpException, HttpStatus, Injectable, Request } from "@nestjs/common";
 import { Product } from "./Entities/Product";
 import { InjectRepository } from "@nestjs/typeorm";
-import {  Repository } from "typeorm";
+import {  Like, Repository } from "typeorm";
 import { ProductDto } from "./dto/Productdto";
 import { UpdateDto } from "./dto/updateProductdto";
 import { UserService } from "src/UserModule/user.service";
+import { User } from "src/UserModule/Entities/User";
+import { ProductOrder } from "./Entities/ProductOrder";
+import { Cart } from "./Entities/Cart";
 
 @Injectable()
 export class ProductService{
@@ -12,18 +15,28 @@ export class ProductService{
         @InjectRepository(Product)
         private productRepository: Repository<Product>,
         private userService: UserService,
+        private cartRepository:Repository<Cart>,
+        private orderRepository:Repository<ProductOrder>,
       ) {}
       async getProducts(filters:UpdateDto,page)
       {
+        const name=filters.name;
         try
         {
-          return await this.productRepository.find({where:filters,take:9,order:{name:"ASC"},skip:page-1});
+          if(name)
+              return await this.productRepository.find({where:{...filters,name:Like("%"+name+"%")},take:9,order:{name:"ASC"},skip:9*(page-1)});
+          else
+              return await this.productRepository.find({where:filters,take:9,order:{name:"ASC"},skip:9*(page-1)});
         }
         catch
         {
           throw new HttpException("Not Found",404);
         }
         
+      }
+      async getByName(name:string)
+      {
+        return await this.productRepository.findOneBy({name:name});
       }
       async getProduct(filters:UpdateDto)
       {
@@ -61,5 +74,14 @@ export class ProductService{
           return new HttpException("You don't own this product",401)
         else
           return await this.productRepository.delete({name:productname});
+      }
+      async addToCart(username:string,productname:string,quantity:number)
+      {
+        const user:User=await this.userService.getUser(username);
+        const product:Product=await this.getByName(productname);
+        const cart=user.shoppingcart
+        const productOrder=this.orderRepository.create({product:product,quantity:quantity});
+        this.orderRepository.save(productOrder);
+        cart.orders.push(productOrder);
       }
 }

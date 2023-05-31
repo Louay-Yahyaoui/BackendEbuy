@@ -1,6 +1,6 @@
 import { CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { ProductOrder } from "./ProductOrder";
-@Entity()
+@Entity('order')
 export class Order
 {
     @PrimaryGeneratedColumn()

@@ -3,10 +3,14 @@ import { Product } from "./Product";
 @Entity()
 export class ProductOrder
 {
+    constructor(product:Product,quantity:number) {
+        this.product=product;
+        this.quantity=quantity;
+    }
     @PrimaryGeneratedColumn()
     id:number;
     @Column()
-    quantitiy:number;
+    quantity:number;
     @OneToOne(()=>Product,{})
     product:Product;
 }

@@ -1,4 +1,4 @@
-import { Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Entity, OneToMany,  PrimaryGeneratedColumn } from "typeorm";
 import { ProductOrder } from "./ProductOrder";
 
 @Entity()

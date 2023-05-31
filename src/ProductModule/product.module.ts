@@ -7,6 +7,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { UserModule } from "src/UserModule/User.module";
 import { ProductOrder } from "./Entities/ProductOrder";
 import { Cart } from "./Entities/Cart";
+import { Order } from "./Entities/Order";
 
 @Module(
     {

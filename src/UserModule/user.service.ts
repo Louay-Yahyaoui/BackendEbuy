@@ -1,12 +1,13 @@
 import {  HttpException, HttpStatus, Injectable, NotFoundException, Res } from "@nestjs/common";
 import { UserDto } from "./dto/UserDTO";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { Like, Repository } from "typeorm";
 import { User } from "./Entities/User";
 import { HashService } from "src/Hashing/hashing.service";
 import {sign} from 'jsonwebtoken';
 import { Response } from "express";
 import { UpdateDto } from "./dto/UpdateDto";
+import { Cart } from "src/ProductModule/Entities/Cart";
 @Injectable()
 export class UserService
 {
@@ -17,19 +18,20 @@ export class UserService
       ) {}
     
     async getUser(username: string) {
-        const user=await this.userRepository.findOneBy({username:username});
+        const user=await this.userRepository.findOneBy({username:Like(username)});
         if(!user)
             throw new NotFoundException(`${username} was not found.`);
         return user;
     }
-    async getAll()
+    async getAll(page:any)
     {
-        const users=await this.userRepository.find();
-        return users;
+      const users=await this.userRepository.find({take:9,skip:9*(page-1)});
+      return users;
     }
     async addUser(userdto: UserDto) {
         userdto.password=this.hashService.hashString(userdto.password);
         const user=this.userRepository.create(userdto);
+        user.shoppingcart=new Cart();
         try {
             return await this.userRepository.save(user);
           }
