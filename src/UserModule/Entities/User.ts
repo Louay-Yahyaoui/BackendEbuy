@@ -1,6 +1,7 @@
-import { Entity,Column, Timestamp, CreateDateColumn, PrimaryGeneratedColumn } from "typeorm";
+import { Entity,Column, Timestamp, CreateDateColumn, PrimaryGeneratedColumn, OneToOne } from "typeorm";
 import { Gender } from "./Gender";
 import { Role } from "./Role";
+import { Cart } from "src/ProductModule/Entities/Cart";
 
 @Entity('user')
 export class User
@@ -27,4 +28,6 @@ export class User
     gender:Gender;
     @CreateDateColumn()
     datejoined:Timestamp;
+    @OneToOne(()=>Cart,{eager:true})
+    shoppingcart:Cart;
 }

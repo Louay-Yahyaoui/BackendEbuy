@@ -1,6 +1,6 @@
 import { Gender } from "../Entities/Gender";
 import {  IsEmail, IsPhoneNumber, Length, MinLength } from 'class-validator';
-import ErrorMessages from './../../error messages/errorMessages';
+import ErrorMessages from '../../Error messages/errorMessages';
 export class UserDto
 {
     @Length(3,30,{message:ErrorMessages.LENGTH_ERROR})

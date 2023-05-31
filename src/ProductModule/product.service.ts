@@ -13,9 +13,17 @@ export class ProductService{
         private productRepository: Repository<Product>,
         private userService: UserService,
       ) {}
-      async getProducts(filters:UpdateDto)
+      async getProducts(filters:UpdateDto,page)
       {
-        return await this.productRepository.find({where:filters});
+        try
+        {
+          return await this.productRepository.find({where:filters,take:9,order:{name:"ASC"},skip:page-1});
+        }
+        catch
+        {
+          throw new HttpException("Not Found",404);
+        }
+        
       }
       async getProduct(filters:UpdateDto)
       {
