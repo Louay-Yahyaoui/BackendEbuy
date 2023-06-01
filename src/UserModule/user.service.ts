@@ -1,4 +1,4 @@
-import {  HttpException, HttpStatus, Injectable, NotFoundException, Res } from "@nestjs/common";
+import {  ConflictException,  Injectable, NotFoundException, Res, UnauthorizedException } from "@nestjs/common";
 import { UserDto } from "./dto/UserDTO";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Like, Repository } from "typeorm";
@@ -31,12 +31,14 @@ export class UserService
     }
     async addUser(userdto: UserDto) {
         userdto.password=this.hashService.hashString(userdto.password);
-        const user=this.userRepository.create(userdto);
+        
         try {
-            return await this.userRepository.save(user);
+          const user=this.userRepository.create(userdto);
+          await this.userRepository.save(user);
+            return {username:user.username};
           }
           catch (e) {
-            return new HttpException("couldn't create user.",HttpStatus.CONFLICT);
+            return new ConflictException("couldn't create user.");
           }
     }
     async login(username:string,password:string,@Res() res:Response)
@@ -47,7 +49,7 @@ export class UserService
       .where('user.username=:username',{username:username})
       .getRawOne();
       if(!result)
-        throw new HttpException('Wrong username', HttpStatus.UNAUTHORIZED);
+        throw new UnauthorizedException('Wrong username');
       if(this.hashService.verifyStringWithSalt(password,result.password))
       {
         const userPayload = {  username: username,role:result.role };
@@ -57,23 +59,19 @@ export class UserService
       }
       else
       {
-        throw new HttpException('Wrong password', HttpStatus.UNAUTHORIZED);
+        throw new UnauthorizedException('Wrong password');
       } 
         
     }
     async updateUser(newuser:UpdateDto,req:any)
     {
       const res=await this.userRepository.update({username:req.username},newuser);
-      console.log(res);
       return res;
     }
     async deleteUser(req:any)
     {
       const username=req.username;
       const password=req.body.password;
-      if(!password)
-        throw new HttpException('Please provide your password to delete your account',HttpStatus.UNAUTHORIZED)
-      const res=await this.userRepository.delete({username:username,password:this.hashService.hashString(password)});
-      return res;
+      return await this.userRepository.delete({username:username,password:this.hashService.hashString(password)});
     }
 }

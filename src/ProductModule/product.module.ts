@@ -13,7 +13,7 @@ import { Order } from "./Entities/Order";
         imports:[HashModule,TypeOrmModule.forFeature(
             [Product,Order,ProductOrder]
           ),UserModule],
-        providers:[ProductService],
+        providers:[ProductService,],
         controllers:[ProductController],
         exports:[ProductService]
     }

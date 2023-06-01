@@ -1,4 +1,4 @@
-import {  HttpException, HttpStatus, Injectable, Request } from "@nestjs/common";
+import {  ConflictException,  Injectable, NotAcceptableException, NotFoundException, Request, UnauthorizedException } from "@nestjs/common";
 import { Product } from "./Entities/Product";
 import { InjectRepository } from "@nestjs/typeorm";
 import {  Like, Repository } from "typeorm";
@@ -8,7 +8,6 @@ import { UserService } from "src/UserModule/user.service";
 import { Order } from "./Entities/Order";
 import { OrderDto } from "./dto/OrderDto";
 import { User } from "src/UserModule/Entities/User";
-import { ProductOrderDto } from "./dto/ProductOrderDto";
 import { ProductOrder } from "./Entities/ProductOrder";
 
 @Injectable()
@@ -17,37 +16,37 @@ export class ProductService{
     constructor(
         @InjectRepository(Product)
         private productRepository: Repository<Product>,
-        private userService: UserService,
         @InjectRepository(Order)
         private orderRepository:Repository<Order>,
         @InjectRepository(ProductOrder)
-        private productOrderRepository:Repository<ProductOrder>
+        private productOrderRepository:Repository<ProductOrder>,
+        private userService: UserService,
       ) {}
       async ConfirmOrder(username: string,orderDto:OrderDto ) {
         const user:User=await this.userService.getUser(username);
         const orders:ProductOrder[]=[];
-        orderDto.orders.forEach(async(prodOrder:ProductOrderDto)=>
+        for(let i=0;i<orderDto.orders.length;i++)
         {
-          const product=await this.getProduct({name:prodOrder.product});
-          if(!product)
-            throw new HttpException(`${prodOrder.product} was not found.`,HttpStatus.NOT_FOUND);
-          else if(prodOrder.quantity>product.quantity)
-            throw new HttpException(`We only have ${product.quantity} ${prodOrder.product}s in stock.`,HttpStatus.NOT_ACCEPTABLE);
-          orders.push(new ProductOrder(product,prodOrder.quantity));
-        })
-        const order:Order=this.orderRepository.create();
-        const submittedorders:ProductOrder[]=await this.productOrderRepository.save(orders);
-        orders.forEach((prod:ProductOrder)=>
-        {
-          this.productRepository.update({id_prod:prod.product.id_prod},{quantity:prod.product.quantity-prod.quantity});
+          const {product,quantity}=orderDto.orders.at(i);
+          const prod:Product=await this.getByName(product);
+          if(!prod)
+            throw new NotFoundException(`${product} was not found`);
+          if(prod.quantity<quantity)
+            throw new NotAcceptableException("Our stock is insufficient for meeting your order");
         }
-        
-        )
-        order.orders=submittedorders;
+        for(let i=0;i<orderDto.orders.length;i++)
+        {
+          const {product,quantity}=orderDto.orders.at(i);
+          const prod:Product=await this.getByName(product);
+          const order=this.productOrderRepository.create({product:prod,quantity:quantity});
+          const finalorder=await this.orderRepository.save(order);
+          orders.push(finalorder);
+          this.productRepository.update({id_prod:prod.id_prod},{quantity:prod.quantity-quantity});
+        }    
+        const order=this.orderRepository.create();
+        order.orders=orders;
         order.user=user;
         return await this.orderRepository.save(order);
-        
-        //todo:rewrite this whole motherfucker
       }
       async getHistory(username: string) {
         return await this.orderRepository.find({where:{user:{username:username}}});
@@ -64,7 +63,7 @@ export class ProductService{
           }
           catch
           {
-            throw new HttpException("Not Found",404);
+            throw new NotFoundException("Not Found");
           }
           
         }
@@ -87,7 +86,7 @@ export class ProductService{
         }
         catch
         {
-          return new HttpException("couldn't create product.",HttpStatus.CONFLICT);
+          return new ConflictException("couldn't create product.");
         }
       }
       async updateProduct(@Request() req:any,productname:string)
@@ -97,7 +96,7 @@ export class ProductService{
         const role=req.role;
         const product:Product=await this.getProduct({name:productname});
         if((product.owner.name!==username)&&(role!=='Admin'))
-          return new HttpException("You don't own this product",401)
+          return new UnauthorizedException("You don't own this product");
         else
           return await this.productRepository.update({name:productname},newproduct);
       }
@@ -105,8 +104,23 @@ export class ProductService{
       {
         const product:Product=await this.getProduct({name:productname});
         if((product.owner.username!==username)&&(role!=='Admin'))
-          return new HttpException("You don't own this product",401)
+          return new UnauthorizedException("You don't own this product");
         else
           return await this.productRepository.delete({name:productname});
+      }
+      async countFiltered(filters:UpdateDto)
+      {
+        const name=filters.name;
+          try
+          {
+            if(name)
+                return await this.productRepository.count({where:{...filters,name:Like("%"+name+"%")}});
+            else
+              return await this.productRepository.count({where:filters});
+          }
+          catch
+          {
+            throw new NotFoundException("Not Found");
+          }
       }
 }

@@ -1,22 +1,27 @@
 import {  Controller,Delete, Get,  Param,  Patch, Post, Query, Request} from "@nestjs/common"
 import { ProductService } from "./product.service";
 import { UpdateDto } from "./dto/updateProductdto";
-import { isNumber } from "class-validator";
+import { isNumberString } from "class-validator";
 @Controller('/products')
 export class ProductController
 {
     constructor(private productService:ProductService,){}
+    @Get("/count")
+    CountResults(@Query() q:UpdateDto)
+    {
+        return this.productService.countFiltered(q);
+    }
     @Get(":page?")
     getByFilters(@Query() q:UpdateDto,@Param("page")page)
     {
-        if(!isNumber(page))
+        if(!isNumberString(page))
             page = 1;   
         return this.productService.getProducts(q,page);
     }
     @Get(":name")
     getProduct(@Param("name") name:string)
     {
-        this.productService.getByName(name);
+        return this.productService.getByName(name);
     }
     @Get('/history')
     OrderHistory(@Request() req:any)
@@ -43,4 +48,5 @@ export class ProductController
     {
         return this.productService.deleteProduct(req.username,req.role,name);
     }
+    
 }

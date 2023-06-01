@@ -31,7 +31,7 @@ import { Order } from './ProductModule/Entities/Order';
     ProductModule,
     AdminModule],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService,],
 })
 export class AppModule 
 {
