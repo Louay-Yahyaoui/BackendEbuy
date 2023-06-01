@@ -6,13 +6,12 @@ import { Product } from "./Entities/Product";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { UserModule } from "src/UserModule/User.module";
 import { ProductOrder } from "./Entities/ProductOrder";
-import { Cart } from "./Entities/Cart";
 import { Order } from "./Entities/Order";
 
 @Module(
     {
         imports:[HashModule,TypeOrmModule.forFeature(
-            [Product,Order,ProductOrder,Cart]
+            [Product,Order,ProductOrder]
           ),UserModule],
         providers:[ProductService],
         controllers:[ProductController],

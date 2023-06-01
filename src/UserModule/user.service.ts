@@ -17,13 +17,7 @@ export class UserService
         private hashService:HashService,
 
       ) {}
-      async getHistory(username: string) {
-        return await this.userRepository
-        .createQueryBuilder('user')
-        .select('user.history') 
-        .where('user.username=:username',{username:username})
-        .getRawOne();
-      }
+      
     async getUser(username: string) {
         const user=await this.userRepository.findOneBy({username:Like(username)});
         if(!user)

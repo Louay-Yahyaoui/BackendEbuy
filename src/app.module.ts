@@ -12,7 +12,6 @@ import { HashModule } from './Hashing/hashing.module';
 import { ConfigModule } from '@nestjs/config';
 import { ProductOrder } from './ProductModule/Entities/ProductOrder';
 import { Order } from './ProductModule/Entities/Order';
-import { Cart } from './ProductModule/Entities/Cart';
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -24,7 +23,7 @@ import { Cart } from './ProductModule/Entities/Cart';
     username: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
-    entities: [User,Product,Cart,ProductOrder,Order],
+    entities: [User,Product,ProductOrder,Order],
     synchronize:true,//you need migrations
     }),
     HashModule,
