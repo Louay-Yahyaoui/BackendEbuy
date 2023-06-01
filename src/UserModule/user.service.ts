@@ -7,16 +7,23 @@ import { HashService } from "src/Hashing/hashing.service";
 import {sign} from 'jsonwebtoken';
 import { Response } from "express";
 import { UpdateDto } from "./dto/UpdateDto";
-import { Cart } from "src/ProductModule/Entities/Cart";
 @Injectable()
 export class UserService
 {
+    
     constructor(
         @InjectRepository(User)
         private userRepository: Repository<User>,
         private hashService:HashService,
+
       ) {}
-    
+      async getHistory(username: string) {
+        return await this.userRepository
+        .createQueryBuilder('user')
+        .select('user.history') 
+        .where('user.username=:username',{username:username})
+        .getRawOne();
+      }
     async getUser(username: string) {
         const user=await this.userRepository.findOneBy({username:Like(username)});
         if(!user)
@@ -31,7 +38,6 @@ export class UserService
     async addUser(userdto: UserDto) {
         userdto.password=this.hashService.hashString(userdto.password);
         const user=this.userRepository.create(userdto);
-        user.shoppingcart=new Cart();
         try {
             return await this.userRepository.save(user);
           }

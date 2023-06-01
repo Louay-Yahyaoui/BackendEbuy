@@ -1,7 +1,7 @@
-import { Entity,Column, Timestamp, CreateDateColumn, PrimaryGeneratedColumn, OneToOne, JoinColumn } from "typeorm";
+import { Entity,Column, Timestamp, CreateDateColumn, PrimaryGeneratedColumn,  OneToMany } from "typeorm";
 import { Gender } from "./Gender";
 import { Role } from "./Role";
-import { Cart } from "src/ProductModule/Entities/Cart";
+import { Order } from "src/ProductModule/Entities/Order";
 
 @Entity('user')
 export class User
@@ -28,7 +28,6 @@ export class User
     gender:Gender;
     @CreateDateColumn()
     datejoined:Timestamp;
-    @OneToOne(()=>Cart,{cascade:true,onDelete:"CASCADE"})
-    @JoinColumn({name:"shopping_cart",referencedColumnName:"id"})
-    shoppingcart:Cart;
+    @OneToMany(()=>Order,(history:Order)=>history.user,{cascade:["insert"],onDelete:"CASCADE"})
+    history:Order[];
 }

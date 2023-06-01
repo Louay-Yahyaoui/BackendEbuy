@@ -1,10 +1,7 @@
-import {  Controller,Delete, Get,  Param,  ParseIntPipe,  Patch, Post, Query, Request} from "@nestjs/common"
+import {  Controller,Delete, Get,  Param,  Patch, Post, Query, Request} from "@nestjs/common"
 import { ProductService } from "./product.service";
 import { UpdateDto } from "./dto/updateProductdto";
-import { IsInt, isNumber } from "class-validator";
-import { UserService } from "src/UserModule/user.service";
-import { User } from "src/UserModule/Entities/User";
-import { ProductOrder } from "./Entities/ProductOrder";
+import { isNumber } from "class-validator";
 @Controller('/products')
 export class ProductController
 {
@@ -21,10 +18,15 @@ export class ProductController
     {
         this.productService.getByName(name);
     }
-    @Post(":name")
-    async addToCart(@Request() req:any,@Query("qty",ParseIntPipe) quantity:number,@Param("name") name:string)
+    @Get('/history')
+    OrderHistory(@Request() req:any)
     {
-        this.productService.addToCart(req.username,name,quantity);
+        return this.productService.getHistory(req.username);
+    }
+    @Post("/order")
+    ConfirmOrder(@Request() req:any)
+    {
+        return this.productService.ConfirmOrder(req.username,req.body);
     }
     @Post("/add")
     addProduct(@Request() req:any)

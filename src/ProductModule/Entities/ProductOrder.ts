@@ -1,5 +1,6 @@
-import { PrimaryGeneratedColumn,Column,OneToOne, Entity } from "typeorm";
+import { PrimaryGeneratedColumn,Column,OneToOne, Entity, JoinColumn, ManyToOne } from "typeorm";
 import { Product } from "./Product";
+import { Order } from "./Order";
 @Entity()
 export class ProductOrder
 {
@@ -11,6 +12,9 @@ export class ProductOrder
     id:number;
     @Column()
     quantity:number;
-    @OneToOne(()=>Product,{})
+    @OneToOne(()=>Product,{cascade:true})
+    @JoinColumn({name:"product_id",referencedColumnName:"id_prod"})
     product:Product;
+    @ManyToOne(()=>Order)
+    order:Order;
 }

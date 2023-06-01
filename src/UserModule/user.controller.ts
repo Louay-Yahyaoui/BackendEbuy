@@ -25,7 +25,6 @@ export class UserController {
             page = 1; 
         return this.userService.getAll(page);
     }
-
     @Get('/users/:username')
     getUser(@Param('username') username: string) {
         return this.userService.getUser(username);

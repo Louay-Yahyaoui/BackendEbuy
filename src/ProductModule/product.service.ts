@@ -5,19 +5,67 @@ import {  Like, Repository } from "typeorm";
 import { ProductDto } from "./dto/Productdto";
 import { UpdateDto } from "./dto/updateProductdto";
 import { UserService } from "src/UserModule/user.service";
+import { Order } from "./Entities/Order";
+import { OrderDto } from "./dto/OrderDto";
 import { User } from "src/UserModule/Entities/User";
+import { ProductOrderDto } from "./dto/ProductOrderDto";
 import { ProductOrder } from "./Entities/ProductOrder";
-import { Cart } from "./Entities/Cart";
 
 @Injectable()
 export class ProductService{
+    
     constructor(
         @InjectRepository(Product)
         private productRepository: Repository<Product>,
         private userService: UserService,
-        private cartRepository:Repository<Cart>,
-        private orderRepository:Repository<ProductOrder>,
+        @InjectRepository(Order)
+        private orderRepository:Repository<Order>,
       ) {}
+      async ConfirmOrder(username: string,orderDto:OrderDto ) {
+        
+          const orders:ProductOrder[]=[];
+        orderDto.orders.forEach(async (porder:ProductOrderDto)=>
+        {
+          const product:Product=await this.getByName(porder.product);
+          if(!product)
+            throw new HttpException(`you ordered ${porder.product} which doesn't exist`,HttpStatus.NOT_FOUND);
+          else if(product.owner.username===username)
+            throw new HttpException(`you can't buy your own product`,HttpStatus.NOT_ACCEPTABLE);
+          else if(product.quantity<porder.quantity)
+            throw new HttpException(`You ordered ${porder.quantity} ${product.name} whereas we only have ${product.quantity} in stock`,
+            HttpStatus.NOT_ACCEPTABLE);
+
+          
+          orders.push(new ProductOrder(product,porder.quantity));
+        })
+        const order:Order=new Order();
+        order.orders=orders;
+        const user:User=await this.userService.getUser(username);
+        order.user=user;
+        const ordero=this.orderRepository.create(order);
+        if(!user.history) 
+          user.history=[ordero];
+        else
+          user.history.push(ordero);
+        console.log(5);
+        try{
+          orderDto.orders.forEach(async (porder:ProductOrderDto)=>
+        {
+          const product:Product=await this.getByName(porder.product);
+          this.productRepository.update(product.id_prod,{quantity:product.quantity-porder.quantity});
+        })
+          return await this.orderRepository.save(order);
+        }
+        catch{
+          throw new HttpException("couldn't pass order",HttpStatus.CONFLICT);
+        }
+        
+        
+        
+    }
+    async getHistory(username: string) {
+      return await this.orderRepository.find({where:{user:{username:username}}});
+    }
       async getProducts(filters:UpdateDto,page)
       {
         const name=filters.name;
@@ -74,14 +122,5 @@ export class ProductService{
           return new HttpException("You don't own this product",401)
         else
           return await this.productRepository.delete({name:productname});
-      }
-      async addToCart(username:string,productname:string,quantity:number)
-      {
-        const user:User=await this.userService.getUser(username);
-        const product:Product=await this.getByName(productname);
-        const cart=user.shoppingcart
-        const productOrder=this.orderRepository.create({product:product,quantity:quantity});
-        this.orderRepository.save(productOrder);
-        cart.orders.push(productOrder);
       }
 }
