@@ -16,6 +16,16 @@ export class ProductController
     {
         return this.productService.getByName(name);
     }
+    @Get("/id/:id")
+    getProductbyId(@Param("id") id:number)
+    {
+        return this.productService.getById(id);
+    }
+    @Get("/history/:id")
+    getHistorybyId(@Param("id") id:number)
+    {
+        return this.productService.getOneHistory(id);
+    }
     @Get(":page?")
     getByFilters(@Query() q:UpdateDto,@Param("page")page)
     {
@@ -24,7 +34,7 @@ export class ProductController
         return this.productService.getProducts(q,page);
     }
    
-    @Get('/history')
+    @Post('/history')
     OrderHistory(@Request() req:any)
     {
         return this.productService.getHistory(req.username);

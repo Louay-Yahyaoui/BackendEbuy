@@ -12,7 +12,7 @@ export class ProductOrder
     id:number;
     @Column()
     quantity:number;
-    @ManyToOne(()=>Product,{cascade:true})
+    @ManyToOne(()=>Product,{cascade:true,eager:true})
     @JoinColumn({name:"product_id",referencedColumnName:"id_prod"})
     product:Product;
     @ManyToOne(()=>Order,{cascade:false})

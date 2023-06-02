@@ -52,6 +52,25 @@ export class ProductService{
       async getHistory(username: string) {
         return await this.orderRepository.find({where:{user:{username:username}}});
       }
+      async getOneHistory(id: number) {
+        const products=[];
+        const res= await this.orderRepository.findOneBy({id:id});
+        console.log(res);
+        for(let i=0;i<res.orders.length;i++)
+        { 
+          const product:Product=res.orders[i].product;
+          const object = {
+            quantity:res.orders[i].quantity,
+            image:product.image,
+            name:product.name,
+            brand:product.brand,
+            description: product.description,
+            price:product.price
+          }
+          products.push(object)
+        }
+        return JSON.stringify(products);
+      }
         async getProducts(filters:UpdateDto,page)
         {
           const name=filters.name;
@@ -68,6 +87,10 @@ export class ProductService{
           }
           
         }
+        async getById(id:number)
+      {
+        return await this.productRepository.findOneBy({id_prod:id});
+      }
       async getByName(name:string)
       {
         return await this.productRepository.findOneBy({name:name});
