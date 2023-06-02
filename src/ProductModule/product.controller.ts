@@ -11,6 +11,11 @@ export class ProductController
     {
         return this.productService.countFiltered(q);
     }
+    @Get("/namee/:name")
+    getProduct(@Param("name") name:string)
+    {
+        return this.productService.getByName(name);
+    }
     @Get(":page?")
     getByFilters(@Query() q:UpdateDto,@Param("page")page)
     {
@@ -18,11 +23,7 @@ export class ProductController
             page = 1;   
         return this.productService.getProducts(q,page);
     }
-    @Get(":name")
-    getProduct(@Param("name") name:string)
-    {
-        return this.productService.getByName(name);
-    }
+   
     @Get('/history')
     OrderHistory(@Request() req:any)
     {

@@ -24,6 +24,7 @@ export class ProductService{
       ) {}
       async ConfirmOrder(username: string,orderDto:OrderDto ) {
         const user:User=await this.userService.getUser(username);
+        console.log(orderDto)
         const orders:ProductOrder[]=[];
         for(let i=0;i<orderDto.orders.length;i++)
         {
@@ -39,14 +40,14 @@ export class ProductService{
           const {product,quantity}=orderDto.orders.at(i);
           const prod:Product=await this.getByName(product);
           const order=this.productOrderRepository.create({product:prod,quantity:quantity});
-          const finalorder=await this.orderRepository.save(order);
+          const finalorder=await this.productOrderRepository.save(order);
           orders.push(finalorder);
           this.productRepository.update({id_prod:prod.id_prod},{quantity:prod.quantity-quantity});
         }    
-        const order=this.orderRepository.create();
-        order.orders=orders;
-        order.user=user;
-        return await this.orderRepository.save(order);
+        const order1=this.orderRepository.create();
+        order1.orders=orders;
+        order1.user=user;
+        return await this.orderRepository.save(order1);
       }
       async getHistory(username: string) {
         return await this.orderRepository.find({where:{user:{username:username}}});
@@ -95,7 +96,7 @@ export class ProductService{
         const username=req.username;
         const role=req.role;
         const product:Product=await this.getProduct({name:productname});
-        if((product.owner.name!==username)&&(role!=='Admin'))
+        if((role!=='Admin'))
           return new UnauthorizedException("You don't own this product");
         else
           return await this.productRepository.update({name:productname},newproduct);
@@ -103,7 +104,7 @@ export class ProductService{
       async deleteProduct(username:string,role:string,productname:string)
       {
         const product:Product=await this.getProduct({name:productname});
-        if((product.owner.username!==username)&&(role!=='Admin'))
+        if((role!=='Admin'))
           return new UnauthorizedException("You don't own this product");
         else
           return await this.productRepository.delete({name:productname});

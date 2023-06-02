@@ -4,7 +4,7 @@ import { UserService } from "./user.service";
 import { Response } from "express";
 import { UpdateDto } from "./dto/UpdateDto";
 import { loginDto } from "./dto/loginDto";
-import { isNumber } from "class-validator";
+import { isNumberString } from "class-validator";
 import { HttpExceptionFilter } from "src/FilterModule/http-exception.filter";
 @Controller()
 export class UserController {
@@ -19,10 +19,14 @@ export class UserController {
     login(@Body() body: loginDto, @Res() response: Response) {
         return this.userService.login(body.username, body.password, response);
     }
-
+    @Get('/user/count')
+    userCount()
+    {
+        return this.userService.countUser();
+    }
     @Get('/users/all/:page?')
     getAllUsers(@Param('page') page: any) {
-        if(!isNumber(page))
+        if(!isNumberString(page))
             page = 1; 
         return this.userService.getAll(page);
     }

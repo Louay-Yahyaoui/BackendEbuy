@@ -26,18 +26,21 @@ export class UserService
     }
     async getAll(page:any)
     {
-      const users=await this.userRepository.find({take:9,skip:9*(page-1)});
+      const users=await this.userRepository.find({take:9,order:{name:"ASC"},skip:9*(page-1)});
+      console.log(page);
       return users;
     }
     async addUser(userdto: UserDto) {
+
         userdto.password=this.hashService.hashString(userdto.password);
         
         try {
           const user=this.userRepository.create(userdto);
           await this.userRepository.save(user);
-            return {username:user.username};
+            console.log(user);
           }
           catch (e) {
+            console.log(e);
             return new ConflictException("couldn't create user.");
           }
     }
@@ -53,15 +56,20 @@ export class UserService
       if(this.hashService.verifyStringWithSalt(password,result.password))
       {
         const userPayload = {  username: username,role:result.role };
-        const token=sign(userPayload, process.env.SALT, { expiresIn: '30d' });
-        res.cookie('jwt', token,{maxAge:30*24*3600*1000});
-        res.send('Login successful!');
+        const token=sign(userPayload, process.env.SALT, { expiresIn: '30d', });
+        res.cookie('jwt', token,{maxAge:30*24*3600*1000,httpOnly: true });
+        res.send({token});
       }
       else
       {
         throw new UnauthorizedException('Wrong password');
       } 
         
+    }
+    async countUser()
+    {
+      const res= await this.userRepository.count();
+      return res;
     }
     async updateUser(newuser:UpdateDto,req:any)
     {
