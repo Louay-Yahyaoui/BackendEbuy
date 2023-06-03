@@ -6,7 +6,7 @@ export class Product
 {
     @PrimaryGeneratedColumn()
     id_prod:number;
-    @Column({unique:true})
+    @Column({unique:true,nullable:false})
     name:string;
     @Column()
     price:number;

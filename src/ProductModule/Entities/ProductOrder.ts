@@ -15,6 +15,6 @@ export class ProductOrder
     @ManyToOne(()=>Product,{cascade:true,eager:true})
     @JoinColumn({name:"product_id",referencedColumnName:"id_prod"})
     product:Product;
-    @ManyToOne(()=>Order,{cascade:false})
+    @ManyToOne(()=>Order,{cascade:false, onDelete:"CASCADE"})
     order:Order;
 }

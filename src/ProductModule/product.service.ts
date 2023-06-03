@@ -23,7 +23,7 @@ export class ProductService{
         private userService: UserService,
       ) {}
       async ConfirmOrder(username: string,orderDto:OrderDto ) {
-        const user:User=await this.userService.getUser(username);
+        const user:User=await this.userService.getUser2(username);
         console.log(orderDto)
         const orders:ProductOrder[]=[];
         for(let i=0;i<orderDto.orders.length;i++)
@@ -102,15 +102,15 @@ export class ProductService{
       async addProduct(req:any)
       {
         const productdto:ProductDto=req.body;
-        const user=await this.userService.getUser(req.username);
-        const product=this.productRepository.create({...productdto,owner:user});
+        const user=await this.userService.getUser2(req.username);
         try
         {
+        const product=this.productRepository.create({...productdto,owner:user});
           return await this.productRepository.save(product);
         }
         catch
         {
-          return new ConflictException("couldn't create product.");
+          throw new ConflictException("couldn't create product.");
         }
       }
       async updateProduct(@Request() req:any,productname:string)

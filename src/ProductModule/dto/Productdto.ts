@@ -1,7 +1,7 @@
-import {  IsInt, IsUrl, MaxLength } from 'class-validator';
+import {  IsInt, IsUrl, MaxLength, MinLength } from 'class-validator';
 import ErrorMessages from '../../Error messages/errorMessages';
 export class ProductDto
-{
+{   @MinLength(3,{message:ErrorMessages.MIN_LENGTH_ERROR})
     name:string;
     price:number;
     category:string;

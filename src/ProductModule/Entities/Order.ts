@@ -8,8 +8,8 @@ export class Order
     id:number;
     @CreateDateColumn()
     date_cmd:Timestamp;
-    @OneToMany(()=>ProductOrder,(orders:ProductOrder)=>orders.order,{eager:true,onDelete:"RESTRICT",cascade:true})
+    @OneToMany(()=>ProductOrder,(orders:ProductOrder)=>orders.order,{eager:true,onDelete:"CASCADE"})
     orders:ProductOrder[];
-    @ManyToOne(()=>User,(user:User)=>user.history,{cascade:["update"]})
+    @ManyToOne(()=>User,(user:User)=>user.history,{cascade:true,onDelete:"CASCADE"})
     user:User;
 }

@@ -30,16 +30,21 @@ export class UserController {
             page = 1; 
         return this.userService.getAll(page);
     }
-    @Get('/users/:username')
-    getUser(@Param('username') username: string) {
-        return this.userService.getUser(username);
+    @Post('/users/one')
+    getUser(@Request() req: any, @Res() res:Response) {
+        return this.userService.getUser(req,res);
+        
     }
     @Patch('/users')
     updateUser(@Request() req: any, @Body() user: UpdateDto) {
         this.userService.updateUser(user, req);
     }
-    @Delete('/users')
-    deleteUser(@Request() req: any) {
-        this.userService.deleteUser(req);
+    @Delete('/users/one')
+    deleteUser2(@Request() req: any) {
+        this.userService.deleteUser2(req);
+    }
+    @Delete('/users/oneuser/:email')
+    deleteUser(@Request() req: any,@Param("email")email:String) {
+        this.userService.deleteUser(req,email);
     }
 }
